@@ -1,4 +1,4 @@
-# eurocss_data_challenge
+# Data challenge submission - Gender bias in digital communication
 <div style="text-align: justify">
 Replication materials for our data challenge submission to the European Symposium Series on Societal Challenges in Computational Social Science in Cologne on December 5-7, 2018:</div></br>
 
