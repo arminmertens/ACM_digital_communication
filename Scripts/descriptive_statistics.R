@@ -167,43 +167,39 @@ gender_reply_party <- rbind(gender_reply_party, tw_adf)
 # ----------------------------
 # Plots for ACM Paper (output in .tex)
 # Plot Figure 1
-# use tikz to render in latex enironment
-#dev.off()
-#tikz(file = "plot_descriptive_1.tex", width = 5, height = 4)
+# use tikz and dev.off() to render in latex enironment
+# dev.off()
+# tikz(file = "plot_descriptive_1.tex", width = 5, height = 4)
 gender_tw_party %>% 
   ggplot(aes(group, n.x,fill = gender, width=.75)) + 
   geom_bar(stat = "identity",position=position_dodge()) +
- # facet_grid(group ~ .) +
   theme_bw() +
   scale_fill_manual(name = "",
                      values = c("#440154FF", "#20A387FF")) +
   xlab("") + ylab("") + 
-#  labs(title = "Number of tweets by politicians",
-#       subtitle = "July 6, 2017 to September 29, 2017") + 
   coord_flip() +
-  ylab("number of tweets") +
+  ylab("\nnumber of tweets") +
+  theme(axis.text = element_text(size = 12)) +
   theme(strip.background = element_rect(fill = "white")) +
   geom_vline(xintercept = 4.5,lty=2) +
-# match default line size of theme_classic# hide facet o
   NULL
-
 #endoffile <- dev.off() 
 
 # Plot Figure 2
-#tikz(file = "plot_descriptive_2.tex", width = 5, height = 4)
+# tikz(file = "plot_descriptive_2.tex", width = 5, height = 4)
 gender_reply_party %>% 
   ggplot(aes(group, n.x,fill = gender, width = .75)) + 
   geom_bar(stat = "identity", position=position_dodge()) +
   xlab("") +
-  #facet_grid(group ~ .) +
-  scale_fill_manual(name = "gender",
+  scale_fill_manual(name = "",
                     values = c("#440154FF", "#20A387FF")) +
-  ylab("number of tweets") + 
+  ylab("\nnumber of tweets") + 
   coord_flip() +
   theme_bw() +
   theme(strip.background = element_blank(),
         strip.text.y = element_blank())+
-  guides(fill=guide_legend(title="Party")) +
+  guides(fill=guide_legend(title="")) +
+  theme(axis.text = element_text(size = 12)) +
   geom_vline(xintercept = 4.5,lty=2) +
   NULL
-#endoffile <- dev.off() 
+# endoffile <- dev.off() 
