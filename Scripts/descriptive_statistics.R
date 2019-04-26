@@ -23,64 +23,71 @@ rm(load, pkgs)
 current_path <- getActiveDocumentContext()$path 
 setwd(dirname(current_path))
 
-load("complete_tweets_by_politicians.RData") 
-tweets_by_politicians <- all.pol 
-rm(all.pol) 
+# anonomyzed tweets by politicians
+load("bypol_data.RData") 
+tweets_by_politicians <- bypol.senti_save
+rm(bypol.senti_save) 
 
-# getting the eeverypolitican data
-everypol_bundestag <- read.csv("../Auxiliary datasets/unified_politicians_file_NOV2018.csv", 
-                               stringsAsFactors = F, encoding="UTF-8") 
+# anonomyzed tweets at politicans
+load("atpol_data.Rdata")
+tweets_at_politicians <- atpol.senti_save
+remove(atpol.senti_save)
 
-everypol_bundestag$twitter <- utf8_normalize(everypol_bundestag$twitter,
-                                             remove_ignorable = T)
-everypol_bundestag$twitter <- tolower(everypol_bundestag$twitter)
-everypol_bundestag$twitter <- trimws(everypol_bundestag$twitter)
 
-tweets_by_politicians$screen_name <- utf8_normalize(tweets_by_politicians$screen_name,
-                                                    remove_ignorable = T)
-tweets_by_politicians$screen_name <- tolower(tweets_by_politicians$screen_name)
+# ----------------------------
+# clean data
 
-# rename and join political parties
-everypol_bundestag$group <- as.factor(everypol_bundestag$group) 
+# create gender and party variable for tweets by politicians
+tweets_by_politicians <- tweets_by_politicians %>% 
+  separate(labels, c("gender", "group"), "\\+") 
 
-everypol_bundestag$group <- plyr::revalue(everypol_bundestag$group, 
-                                    c("Alliance '90/The Greens" = "Greens",
-                                      "Alternative for Germany" = "AfD",
-                                      "Christian Democratic Union" = 
+# remove whitespace and recode gender as factor
+tweets_by_politicians$gender <- as.factor(str_trim(tweets_by_politicians$gender, 
+                                                   "both"))
+
+# recode and reorder party variable
+tweets_by_politicians$group <- as.factor(tweets_by_politicians$group) 
+tweets_by_politicians$group <- plyr::revalue(tweets_by_politicians$group, 
+                                    c(" Alliance '90/The Greens" = "Greens",
+                                      " Alternative for Germany" = "AfD",
+                                      " Christian Democratic Union" = 
                                         "CDU",
-                                      "Christian Social Union of Bavaria" = 
+                                      " Christian Social Union of Bavaria" = 
                                         "CSU",
-                                      "Die Linke" = "Left",
-                                      "Free Democratic Party" = "FDP",
-                                      "Social Democratic Party of Germany" = 
+                                      " Die Linke" = "Left",
+                                      " Free Democratic Party" = "FDP",
+                                      " Social Democratic Party of Germany" = 
                                         "SPD"))
 
-# reorder factor levels
-everypol_bundestag$group <- factor(everypol_bundestag$group, 
+tweets_by_politicians$group <- factor(tweets_by_politicians$group, 
                                    levels = c("AfD","FDP", "CSU", "CDU", 
                                               "SPD", "Greens", "Left"))
 
-# merging data
-tweets_by_politicians <- tweets_by_politicians %>% 
-  left_join(everypol_bundestag[ , c("name", "gender", "group", "facebook", 
-                                    "wikidata",  "twitter")], 
-            by=c("screen_name"="twitter")) 
-
-# load tweets at politicians
-load("../AtPolit/final_de.RData")
-tweets_at_politicians <- final_de
-remove(final_de)
-
-tweets_at_politicians$atId <- utf8_normalize(tweets_at_politicians$atId,
-                                             remove_ignorable = T)
-tweets_at_politicians$atId <- tolower(tweets_at_politicians$atId)
-tweets_at_politicians$atId=gsub("\"","",tweets_at_politicians$atId)
-
-# merging data (info about politican that is mentioned)
+# create gender and party variable for tweets by politicians
 tweets_at_politicians <- tweets_at_politicians %>% 
-  left_join(everypol_bundestag[ , c("name", "gender", "group", "facebook", 
-                                    "wikidata", "twitter")], 
-                               by=c("atId"="twitter")) 
+  separate(labels, c("gender", "group"), "\\+")
+
+# remove whitespace and recode gender as factor
+tweets_at_politicians$gender <- as.factor(str_trim(tweets_at_politicians$gender, 
+                                                   "both"))
+
+# recode and reorder party variable
+tweets_at_politicians$group <- as.factor(tweets_at_politicians$group) 
+tweets_at_politicians$group <- plyr::revalue(tweets_at_politicians$group, 
+                                             c(" Alliance '90/The Greens" = "Greens",
+                                               " Alternative for Germany" = "AfD",
+                                               " Christian Democratic Union" = 
+                                                 "CDU",
+                                               " Christian Social Union of Bavaria" = 
+                                                 "CSU",
+                                               " Die Linke" = "Left",
+                                               " Free Democratic Party" = "FDP",
+                                               " Social Democratic Party of Germany" = 
+                                                 "SPD"))
+
+tweets_at_politicians$group <- factor(tweets_at_politicians$group, 
+                                      levels = c("AfD","FDP", "CSU", "CDU", 
+                                                 "SPD", "Greens", "Left"))
 
 # ----------------------------
 # calculate summary statistics for descriptive plots
@@ -160,8 +167,9 @@ gender_reply_party <- rbind(gender_reply_party, tw_adf)
 # ----------------------------
 # Plots for ACM Paper (output in .tex)
 # Plot Figure 1
-dev.off()
-tikz(file = "plot_descriptive_1.tex", width = 5, height = 4)
+# use tikz to render in latex enironment
+#dev.off()
+#tikz(file = "plot_descriptive_1.tex", width = 5, height = 4)
 gender_tw_party %>% 
   ggplot(aes(group, n.x,fill = gender, width=.75)) + 
   geom_bar(stat = "identity",position=position_dodge()) +
@@ -178,10 +186,11 @@ gender_tw_party %>%
   geom_vline(xintercept = 4.5,lty=2) +
 # match default line size of theme_classic# hide facet o
   NULL
-endoffile <- dev.off() 
+
+#endoffile <- dev.off() 
 
 # Plot Figure 2
-tikz(file = "plot_descriptive_2.tex", width = 5, height = 4)
+#tikz(file = "plot_descriptive_2.tex", width = 5, height = 4)
 gender_reply_party %>% 
   ggplot(aes(group, n.x,fill = gender, width = .75)) + 
   geom_bar(stat = "identity", position=position_dodge()) +
@@ -197,4 +206,4 @@ gender_reply_party %>%
   guides(fill=guide_legend(title="Party")) +
   geom_vline(xintercept = 4.5,lty=2) +
   NULL
-endoffile <- dev.off() 
+#endoffile <- dev.off() 
