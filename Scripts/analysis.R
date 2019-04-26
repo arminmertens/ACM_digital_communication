@@ -21,7 +21,7 @@ library(tikzDevice)
 ######################################################################################
 # BY Politicians
 ######################################################################################
-load("../Generated_data_for_github/bypol_data.Rdata")
+load("bypol_data.Rdata")
 
 mod.b_robust <- lmer(personal_job~ labels + (1|id_person), data=bypol_data)
 
@@ -53,7 +53,7 @@ preds.bypol.robust=preds.bypol.robust[order(preds.bypol.robust$model,decreasing 
 # AT Politicians
 ######################################################################################
 
-load("../Generated_data_for_github/atpol_data.Rdata")
+load("atpol_data.Rdata")
 
 mod.d <- lm(personal_job~labels,data=atpol_data)
 summary(mod.d)
@@ -87,32 +87,34 @@ preds_at=preds_at[order(preds_at$model,decreasing = T),]#
 ######################################################################################
 # PLOTS
 ######################################################################################
-
-
-#tikz(file = "pers_job_2.tex", width = 5, height = 4)
-dwplot(preds_at,
-       dot_args = list(aes(shape=model, colour=model)),
-       whisker_args = list(aes(linetype = model,colour=model))) +
-  geom_hline(yintercept = 4.5,lty=2)+
-  xlab("job vs. personal") + ylab("")   +
-  scale_color_manual(name = "",
-                     values = c("#440154FF", "#20A387FF")) +
-  scale_shape_discrete(name = "")+
-  theme_bw() 
-#endoffile <- dev.off() 
-
-#tikz(file = "pers_job_1.tex", width = 5, height = 4)
+tikz(file = "pers_job_1.tex", width = 5, height = 4)
 dwplot(preds.bypol.robust,
-       dot_args = list(aes(shape=model, colour=model)),
+       dot_args = list(aes(shape=model, colour=model), size = 2.0),
        whisker_args = list(aes(linetype = model,colour=model)))  +
   geom_hline(yintercept = 4.5,lty=2)+
-  xlab("job vs. personal") + ylab("") +
+  xlab("\njob vs. personal") + ylab("") +
   scale_color_manual(name = "",
                      values = c("#440154FF", "#20A387FF")) +
   scale_shape_discrete(name = "")+
-  theme_bw() 
+  theme_bw() +
+  theme(axis.text = element_text(size = 12)) +
+  NULL
+endoffile <- dev.off() 
 
-#endoffile <- dev.off() 
+dev.off()
+tikz(file = "pers_job_2.tex", width = 5, height = 4)
+dwplot(preds_at,
+       dot_args = list(aes(shape=model, colour=model), size = 2.0),
+       whisker_args = list(aes(linetype = model,colour=model))) +
+  geom_hline(yintercept = 4.5,lty=2)+
+  xlab("\njob vs. personal") + ylab("")   +
+  scale_color_manual(name = "",
+                     values = c("#440154FF", "#20A387FF")) +
+  scale_shape_discrete(name = "") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 12)) +
+  NULL
+endoffile <- dev.off() 
 
 
 ####################################################################################################################
@@ -124,7 +126,6 @@ dwplot(preds.bypol.robust,
 # By politicians
 
 mod.b_robust <- lmer(Sentiment~ labels +(1|id_person), data=bypol_data)
-summary(mod.b_robust)
 
 effects.robust.by=Effect(c("labels"), mod.b_robust,
                          xlevels=list(labels=unique(bypol_data$labels)))
@@ -159,7 +160,6 @@ preds.atpol$model=info[,1]
 preds.atpol$term=info[,2]
 
 colnames(preds.atpol)[colnames(preds.atpol) == 'prob'] <- 'estimate'
-str(preds.atpol)
 
 ######## Plots
 preds.bypol.robust$term=preds.bypol.robust$term%>%
@@ -184,30 +184,35 @@ preds.atpol$term=preds.atpol$term%>%
 # --------------
 # plot for ACM paper
 
-#tikz(file = "sentiment_1.tex", width = 5, height = 4)
+dev.off()
+tikz(file = "sentiment_1.tex", width = 5, height = 4)
 dwplot(preds.bypol.robust,
-       dot_args = list(aes(shape=model, colour=model)),
+       dot_args = list(aes(shape=model, colour=model), size = 2.0),
        whisker_args = list(aes(linetype = model,colour=model)))  +
   geom_hline(yintercept = 4.5,lty=2)+
-  xlab("sentiment") + ylab("") +
+  xlab("\nsentiment") + ylab("") +
   # labs(title = "Predicting Sentiment",
   #     subtitle = "Tweets by politicians") +
   scale_color_manual(name = "",
                      values = c("#440154FF", "#20A387FF")) +
   scale_shape_discrete(name = "")+
-  theme_bw() 
-#endoffile <- dev.off() 
+  theme_bw() +
+  theme(axis.text = element_text(size = 12)) 
+endoffile <- dev.off() 
 
-#tikz(file = "sentiment_2.tex", width = 5, height = 4)
+
+tikz(file = "sentiment_2.tex", width = 5, height = 4)
 dwplot(preds.atpol,
-       dot_args = list(aes(shape=model, colour=model)),
+       dot_args = list(aes(shape=model, colour=model), size = 2.0),
        whisker_args = list(aes(linetype = model,colour=model))) +
   geom_hline(yintercept = 4.5,lty=2)+
-  xlab("sentiment") + ylab("")   +
+  xlab("\nsentiment") + ylab("")   +
   scale_color_manual(name = "",
                      values = c("#440154FF", "#20A387FF")) +
   scale_shape_discrete(name = "")+
-  theme_bw() 
-#endoffile <- dev.off() 
+  theme_bw() +
+  theme(axis.text = element_text(size = 12)) +
+  NULL
+endoffile <- dev.off() 
 
 

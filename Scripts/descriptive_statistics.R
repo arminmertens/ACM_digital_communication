@@ -25,13 +25,13 @@ setwd(dirname(current_path))
 
 # anonomyzed tweets by politicians
 load("bypol_data.RData") 
-tweets_by_politicians <- bypol.senti_save
-rm(bypol.senti_save) 
+tweets_by_politicians <- bypol_data
+rm(bypol_data) 
 
 # anonomyzed tweets at politicans
 load("atpol_data.Rdata")
-tweets_at_politicians <- atpol.senti_save
-remove(atpol.senti_save)
+tweets_at_politicians <- atpol_data
+remove(atpol_data)
 
 
 # ----------------------------
@@ -168,8 +168,8 @@ gender_reply_party <- rbind(gender_reply_party, tw_adf)
 # Plots for ACM Paper (output in .tex)
 # Plot Figure 1
 # use tikz and dev.off() to render in latex enironment
-# dev.off()
-# tikz(file = "plot_descriptive_1.tex", width = 5, height = 4)
+dev.off()
+tikz(file = "plot_descriptive_1.tex", width = 5, height = 4)
 gender_tw_party %>% 
   ggplot(aes(group, n.x,fill = gender, width=.75)) + 
   geom_bar(stat = "identity",position=position_dodge()) +
@@ -183,10 +183,10 @@ gender_tw_party %>%
   theme(strip.background = element_rect(fill = "white")) +
   geom_vline(xintercept = 4.5,lty=2) +
   NULL
-#endoffile <- dev.off() 
+endoffile <- dev.off() 
 
 # Plot Figure 2
-# tikz(file = "plot_descriptive_2.tex", width = 5, height = 4)
+tikz(file = "plot_descriptive_2.tex", width = 5, height = 4)
 gender_reply_party %>% 
   ggplot(aes(group, n.x,fill = gender, width = .75)) + 
   geom_bar(stat = "identity", position=position_dodge()) +
@@ -202,4 +202,4 @@ gender_reply_party %>%
   theme(axis.text = element_text(size = 12)) +
   geom_vline(xintercept = 4.5,lty=2) +
   NULL
-# endoffile <- dev.off() 
+endoffile <- dev.off() 
