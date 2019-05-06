@@ -202,6 +202,6 @@ plot(prep_gender, type = "perspectives", topics = 11)
 
 #Presentation of the topics
 labelTopics(TwitterFit)
-summary(prep_pg)
+
 plot(TwitterContent, type = "perspectives", topics = c(6, 7))
 
